@@ -1,5 +1,6 @@
 package com.smartnotes.app.ui.noteeditor
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,18 +26,22 @@ fun NoteEditorScreen(
     onBack: () -> Unit,
     viewModel: NoteEditorViewModel = hiltViewModel()
 ) {
+    val exit = { viewModel.flushAndExit(onBack) }
+
+    BackHandler(onBack = exit)
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("New Note") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = exit) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.save(onSaved = onBack) }) {
-                        Icon(Icons.Default.Check, contentDescription = "Save note")
+                    IconButton(onClick = exit) {
+                        Icon(Icons.Default.Check, contentDescription = "Done")
                     }
                 }
             )
