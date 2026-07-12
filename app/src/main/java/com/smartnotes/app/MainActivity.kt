@@ -3,20 +3,19 @@ package com.smartnotes.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import androidx.room.Room
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.smartnotes.app.ui.noteeditor.NoteEditorScreen
+import com.smartnotes.app.ui.notelist.NoteListScreen
 import dagger.hilt.android.AndroidEntryPoint
-import com.smartnotes.app.data.local.AppDatabase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+
+private const val ROUTE_NOTE_LIST = "note_list"
+private const val ROUTE_NOTE_EDITOR = "note_editor"
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -25,23 +24,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    SmartNotesRoot(applicationContext)
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = ROUTE_NOTE_LIST) {
+                        composable(ROUTE_NOTE_LIST) {
+                            NoteListScreen(onAddNote = { navController.navigate(ROUTE_NOTE_EDITOR) })
+                        }
+                        composable(ROUTE_NOTE_EDITOR) {
+                            NoteEditorScreen(onBack = { navController.popBackStack() })
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun SmartNotesRoot(context: android.content.Context) {
-    LaunchedEffect(Unit) {
-        // Force SQLite to create the underlying DB file on first launch.
-        withContext(Dispatchers.IO) {
-            val db = Room.databaseBuilder(context, AppDatabase::class.java, "smartnotes.db").build()
-            db.openHelper.writableDatabase
-        }
-    }
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("SmartNotes")
     }
 }
