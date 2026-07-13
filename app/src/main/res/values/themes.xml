@@ -1,3 +1,9 @@
 <resources>
     <style name="Theme.SmartNotes" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.SmartNotes.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.SmartNotes</item>
+    </style>
 </resources>

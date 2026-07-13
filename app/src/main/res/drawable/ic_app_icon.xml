@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="88dp"
+    android:height="88dp"
+    android:viewportWidth="88"
+    android:viewportHeight="88">
+    <!-- Self-contained app icon (background baked in) for in-app use, e.g. the
+         splash screen — the launcher uses the adaptive ic_launcher instead. -->
+    <path
+        android:fillColor="#6750A4"
+        android:pathData="M24,0 H64 A24,24 0 0 1 88,24 V64 A24,24 0 0 1 64,88 H24 A24,24 0 0 1 0,64 V24 A24,24 0 0 1 24,0 Z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.4"
+        android:pathData="M28,20 H54 A4,4 0 0 1 58,24 V60 A4,4 0 0 1 54,64 H28 A4,4 0 0 1 24,60 V24 A4,4 0 0 1 28,20 Z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M31,31 L51,31" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M31,39 L51,39" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M31,47 L44,47" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M63,16 L66.2,23.8 L74,27 L66.2,30.2 L63,38 L59.8,30.2 L52,27 L59.8,23.8 Z" />
+</vector>

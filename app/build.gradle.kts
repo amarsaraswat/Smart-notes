@@ -51,9 +51,12 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
     implementation(libs.material.icons.core)
+    implementation(libs.material.icons.extended)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.navigation.compose)
+    implementation(libs.core.splashscreen)
+    implementation(libs.datastore.preferences)
     debugImplementation(libs.ui.tooling)
 
     implementation(libs.hilt.android)

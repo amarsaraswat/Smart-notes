@@ -4,5 +4,7 @@ import com.smartnotes.app.domain.model.Note
 
 data class NoteListUiState(
     val notes: List<Note> = emptyList(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val allTags: List<String> = emptyList(),
+    val selectedTag: String? = null
 )

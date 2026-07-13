@@ -6,5 +6,6 @@ data class Note(
     val content: String,
     val createdAt: Long,
     val updatedAt: Long,
-    val lastAiSummary: String? = null
+    val lastAiSummary: String? = null,
+    val tags: List<String> = emptyList()
 )

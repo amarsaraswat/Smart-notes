@@ -4,26 +4,34 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
@@ -41,10 +49,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.smartnotes.app.domain.model.Note
 
+private const val ALL_TAGS_LABEL = "All"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteListScreen(
     onAddNote: () -> Unit,
+    onSearchOpen: () -> Unit,
+    onNoteClick: (Long) -> Unit,
     viewModel: NoteListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -68,7 +80,16 @@ fun NoteListScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("SmartNotes") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("SmartNotes AI") },
+                actions = {
+                    IconButton(onClick = onSearchOpen) {
+                        Icon(Icons.Default.Search, contentDescription = "Search notes")
+                    }
+                }
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddNote) {
@@ -76,43 +97,98 @@ fun NoteListScreen(
             }
         }
     ) { padding ->
-        if (uiState.notes.isEmpty() && !uiState.isLoading) {
-            EmptyNotesState(modifier = Modifier.padding(padding))
-        } else {
-            LazyColumn(
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            TagFilterRow(
+                allTags = uiState.allTags,
+                selectedTag = uiState.selectedTag,
+                onTagToggle = viewModel::onTagFilterToggle,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(uiState.notes, key = { it.id }) { note ->
-                    SwipeableNoteItem(note = note, onDelete = { viewModel.deleteNote(note) })
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+            if (uiState.notes.isEmpty() && !uiState.isLoading) {
+                EmptyNotesState(
+                    isFiltering = uiState.selectedTag != null,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(uiState.notes, key = { it.id }) { note ->
+                        SwipeableNoteItem(
+                            note = note,
+                            onDelete = { viewModel.deleteNote(note) },
+                            onClick = { onNoteClick(note.id) }
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EmptyNotesState(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+private fun TagFilterRow(
+    allTags: List<String>,
+    selectedTag: String?,
+    onTagToggle: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item {
+            FilterChip(
+                selected = selectedTag == null,
+                onClick = { selectedTag?.let { onTagToggle(it) } },
+                label = { Text(ALL_TAGS_LABEL) }
+            )
+        }
+        items(allTags, key = { it }) { tag ->
+            FilterChip(
+                selected = tag == selectedTag,
+                onClick = { onTagToggle(tag) },
+                label = { Text(tag) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyNotesState(isFiltering: Boolean, modifier: Modifier = Modifier) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "No notes yet",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Tap + to create your first note",
-                style = MaterialTheme.typography.bodyMedium
-            )
+            if (isFiltering) {
+                Text(
+                    text = "No notes match this filter",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "Try selecting a different tag.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            } else {
+                Text(
+                    text = "No notes yet",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "Capture your first thought — meeting notes, journal entries, ideas.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SwipeableNoteItem(note: Note, onDelete: () -> Unit) {
+private fun SwipeableNoteItem(note: Note, onDelete: () -> Unit, onClick: () -> Unit) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
             if (value != SwipeToDismissBoxValue.Settled) {
@@ -129,7 +205,7 @@ private fun SwipeableNoteItem(note: Note, onDelete: () -> Unit) {
                     .fillMaxSize()
                     .background(
                         color = MaterialTheme.colorScheme.errorContainer,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(16.dp)
                     )
                     .padding(horizontal = 20.dp),
                 contentAlignment = Alignment.CenterEnd
@@ -142,13 +218,19 @@ private fun SwipeableNoteItem(note: Note, onDelete: () -> Unit) {
             }
         }
     ) {
-        NoteListItem(note = note)
+        NoteListItem(note = note, onClick = onClick)
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun NoteListItem(note: Note) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+private fun NoteListItem(note: Note, onClick: () -> Unit) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = note.title.ifBlank { "Untitled" },
@@ -162,6 +244,26 @@ private fun NoteListItem(note: Note) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
+            if (note.tags.isNotEmpty()) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    note.tags.forEach { tag ->
+                        Surface(
+                            shape = RoundedCornerShape(100.dp),
+                            color = MaterialTheme.colorScheme.secondaryContainer
+                        ) {
+                            Text(
+                                text = tag,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -3,16 +3,34 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M34,24h40a6,6 0,0 1,6 6v48a6,6 0,0 1,-6 6h-40a6,6 0,0 1,-6 -6v-48a6,6 0,0 1,6 -6z" />
-    <path
-        android:fillColor="#1B1B1F"
-        android:pathData="M40,40h28v4h-28z" />
-    <path
-        android:fillColor="#1B1B1F"
-        android:pathData="M40,52h28v4h-28z" />
-    <path
-        android:fillColor="#1B1B1F"
-        android:pathData="M40,64h20v4h-20z" />
+    <!-- Original art is authored on an 88x88 canvas; scale 0.75 and center it
+         within the 108x108 adaptive safe zone (matches the design's app icon). -->
+    <group
+        android:pivotX="44"
+        android:pivotY="44"
+        android:scaleX="0.75"
+        android:scaleY="0.75"
+        android:translateX="10"
+        android:translateY="10">
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="3.4"
+            android:pathData="M28,20 H54 A4,4 0 0 1 58,24 V60 A4,4 0 0 1 54,64 H28 A4,4 0 0 1 24,60 V24 A4,4 0 0 1 28,20 Z" />
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="3"
+            android:pathData="M31,31 L51,31" />
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="3"
+            android:pathData="M31,39 L51,39" />
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="3"
+            android:pathData="M31,47 L44,47" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M63,16 L66.2,23.8 L74,27 L66.2,30.2 L63,38 L59.8,30.2 L52,27 L59.8,23.8 Z" />
+    </group>
 </vector>
